@@ -8,15 +8,22 @@ const { JWT_SECRET } = require("../config");
 router.post("/signup", async (req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
-    //check if this user with this username already exists
+    const admin =await Admin.findOne({
+        username
+    })
+    if (admin){
+        return res.json({
+            msg:"admin already exists"
+        })
+    }
     try{
         await Admin.create({
-            username:username,                 //can use only username, password also. if its like a:a
+            username:username,                
             password:password
         })
-        res.json({message:"User created Successfully"});
+        res.json({message:"Admin created Successfully"});
     } catch(e){
-        res.json({message:e})
+        res.json({message:e.toString()})
     }
 });
 
@@ -24,20 +31,18 @@ router.post("/signup", async (req,res)=>{
 router.post("/signin", async (req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
-    const user = await Admin.find({
-        username,
-        password
-    });
-    if (user){
-        const token = jwt.sign({
-            username
-        }, JWT_SECRET);
-        res.json({
-            token                        // this token will have to be sent as auth header for all routes containing adminMiddleware
-        })                               // as adminMiddleware expects the token and decodes it to verify
+    try {
+        const admin = await Admin.findOne({ username });
+        if (!admin) {
+            return res.status(400).json({msg:'Admin not found'});
+        }
+        const token = jwt.sign({username}, JWT_SECRET);
+        // this token will have to be sent as auth header for all routes containing adminMiddleware as adminMiddleware expects the token and decodes it to verify
+        res.send({ message: 'Sign in successful', token });
+    } catch (error) {
+        res.status(500).send('Server error');
     }
-
-})
+});
 
 
 router.post("/courses", adminMiddleware, async (req,res)=>{
@@ -46,16 +51,22 @@ router.post("/courses", adminMiddleware, async (req,res)=>{
     const imageLink = req.body.imageLink
     const price = req.body.price
     //use zod for input validation
-    const newCourse = await Course.create({
-        title,
-        description,
-        imageLink,
-        price
-    })
-    res.json({
-        message:"Course created successfully", 
-        courseId: newCourse._id
-    })
+    try{
+        const newCourse = await Course.create({
+            title,
+            description,
+            imageLink,
+            price
+        })
+        res.json({
+            message:"Course created successfully", 
+            courseId: newCourse._id
+        })
+    } catch(e){
+        res.json({
+            msg:e.toString()
+        })
+    }
     
 });
 
