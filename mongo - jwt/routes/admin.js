@@ -24,7 +24,7 @@ router.post("/signup", async (req,res)=>{
 router.post("/signin", async (req,res)=>{
     const username = req.body.username;
     const password = req.body.password;
-    const user = await User.find({
+    const user = await Admin.find({
         username,
         password
     });
