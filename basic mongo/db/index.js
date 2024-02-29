@@ -1,9 +1,9 @@
 //Creating the schema and model(tables) of our database here
 
 const mongoose = require("mongoose");     //importing mongoose library
-mongoose.connect("mongodb+srv://123cactusjuice:YVwRE8Fcd3Iiutjd@cluster0.gfnwyso.mongodb.net/CoursesApp");
+mongoose.connect("mongodb+srv://123cactusjuice:YVwRE8Fcd3Iiutjd@cluster0.gfnwyso.mongodb.net/CoursesApp"); // connect with the compass
 
-const AdminSchema = new mongoose.Schema({
+const AdminSchema = new mongoose.Schema({  // define the schema
     username:String,
     password:String
 });
