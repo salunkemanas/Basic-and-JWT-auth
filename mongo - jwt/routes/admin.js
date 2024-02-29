@@ -33,8 +33,8 @@ router.post("/signin", async (req,res)=>{
             username
         }, JWT_SECRET);
         res.json({
-            token
-        })
+            token                        // this token will have to be sent as auth header for all routes containing adminMiddleware
+        })                               // as adminMiddleware expects the token and decodes it to verify
     }
 
 })
